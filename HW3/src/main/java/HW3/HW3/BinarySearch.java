@@ -74,7 +74,7 @@ else if(inputoftype.compareTo("s")==0)
 	System.out.println("0");
 else
 	System.out.println("1");
-	  System.out.println(binarySearch(a1,keyvalue));
+	  
 }
 	}
 
