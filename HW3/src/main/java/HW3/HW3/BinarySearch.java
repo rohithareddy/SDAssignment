@@ -1,89 +1,113 @@
 package HW3.HW3;
 
-import java.util.List;
-
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-
-public class BinarySearch {
-	 public static final int NOT_FOUND = -1;
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public static int binarySearch( Comparable [ ] list, Comparable x )
-  {
-      int first= 0,middle,last=list.length-1;
-      while(last>=first )
-      {
-          middle = ( first + last ) / 2;
-          if( list[ middle ].compareTo( x ) < 0 )
-              first = middle + 1;
-          else if( list[ middle ].compareTo( x ) > 0 )
-              last = middle - 1;
-          else
-              return middle;
-      }
-
-      return NOT_FOUND;     
-  }
+import org.apache.commons.cli.*;
 
 
-public static void main(String[] args) throws Exception {
+public class Main  {
 	
-Options options = new Options();
-
-Option inputtype = new Option("type", "inputtype", true, "type of the input");
-options.addOption(inputtype);
-
-Option key = new Option("key", "key", true, "element to be searched for");
-options.addOption(key);
-
-Option inputlist = new Option("list", "inputlist", true, "index of the element found");
-options.addOption(inputlist);
-
-CommandLineParser commandLineParser = new DefaultParser();
-
-CommandLine commandLine;
-try{
-commandLine = commandLineParser.parse(options, args);
-
-String inputoftype = commandLine.getOptionValue("inputtype");
-String keyvalue = commandLine.getOptionValue("key");
-String firstelement = commandLine.getOptionValue("inputlist");
-List<String> list = commandLine.getArgList();
-
-
-String [ ] a1 = new String [list.size()+1];
-a1[0]=firstelement;
-for (int i=1;i<list.size()+1;i++)
-	  a1[i]=list.get(i-1);
-
-if(inputoftype.compareTo("i")==0){
-	int x=binarySearch(a1,keyvalue);
-	if(x==-1)
-		System.out.println("0");
-	else
-		System.out.println("1");
-}
-else if(inputoftype.compareTo("s")==0)
-{
-	int x1=binarySearch(a1,keyvalue);
-	if(x1==-1)
-	System.out.println("0");
-else
-	System.out.println("1");
-	  
-}
+	public static void main(String[] args) {
+		int returnValue = -1;
+		
+		Options options = new Options();
+		Option type = Option.builder("Type")
+				.required()
+				.longOpt("type")
+				.desc("specifies the type of input: 'i' for integer and 's' for string")
+				.hasArg()
+				.argName("TYPE")
+				.build();
+		options.addOption( type );
+		
+		
+		
+		Option key = Option.builder("Key")
+				.required()
+				.longOpt("key")
+				.desc("specifies the element to be searched in the list")
+				.hasArg()
+		    	.argName("KEY")
+		    	.build();
+		options.addOption( key );
+		
+		
+		
+		Option list = Option.builder("List")
+				.required()
+				.longOpt("list")
+				.desc("specifies the list of sorted integer or strings")
+				.hasArgs()
+				.argName("LIST")
+				.build();
+		options.addOption( list );
+		
+		
+		CommandLineParser parser = new DefaultParser();	
+		try {	
+		    
+		    CommandLine line = parser.parse( options, args );
+		    String inputType = line.getOptionValue("type");
+		    String inputKey = line.getOptionValue("key");
+		    String[] inputList = line.getOptionValues("list");
+		    if (inputType.equalsIgnoreCase("i")) {
+		    	
+		    	try {											
+		    		Integer keyValue=Integer.parseInt(inputKey);
+			    	int length= inputList.length;
+			    	Integer[] listCopy= new Integer[length];
+		    		for (int i = 0; i < length; i++) {
+		    			listCopy[i]=Integer.parseInt(inputList[i]); 
+			    	}
+		    		
+			    	if (binSearch(listCopy,keyValue)){
+			    		returnValue = 1;
+			    	}
+			    	else {
+			    		returnValue = 0;
+			    	}
+		    	} 
+		    	catch (NumberFormatException e) {
+		    		    System.out.println("Only integers are allowed " + e);
+		    		    System.out.println("Program Terminated");
+		    		    System.exit(1);
+		    	}
+		    }
+		    else if (inputType.equalsIgnoreCase("s")) {
+		    	String keyValue=inputKey;
+		    	String[] listCopy=inputList;
+		    	if (binSearch(listCopy,keyValue)){
+		    		returnValue = 1;
+		    	}
+		    	else {
+		    		returnValue = 0;
+		    	}
+		    }
+		    System.out.println(returnValue);				
+		}
+		catch( ParseException e ) {
+		    System.out.println("Unexpected exception:" + e.getMessage());
+		    System.out.println("Unable to parse command line.");
+		}
+		
 	}
-
-catch( ParseException exp ) {
-	    System.out.println( "Unexpected exception:" + exp.getMessage() );
+		
+	private static <T extends Comparable<T>> boolean binSearch(T[] aList, T key) {
+		int first = 0,last=aList.length-1,middle=((first+last)/2);
+		T middleValue=aList[middle];
+		while (first <= last) {			
+			if(key.compareTo(middleValue)==0){
+				return true;				
+			}
+			else if (key.compareTo(middleValue)<0){
+				
+				last = middle-1	;		
+			}
+			else if (key.compareTo(middleValue)>0){
+				first = middle+1;		
+				
+			}
+			middle=(first+last)/2;
+			middleValue=aList[middle];
+		}
+		return false;
 	}
-
-
-
-}
-
 }
