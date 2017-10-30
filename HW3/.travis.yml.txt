@@ -1,0 +1,5 @@
+language:java
+script: mcn clean compile -DskiptTests
+notifications:
+email: 
+	-rmuppidi@uh.edu
